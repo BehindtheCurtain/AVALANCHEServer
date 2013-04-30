@@ -102,7 +102,7 @@ public class BtcDataBase {
 	 * @throws IOException
 	 */
 	public boolean putRun(String uName, String xml, String rName) throws SQLException, IOException{
-		String filePath = "/opt/lampp/htdocs/webalizer/" + uName + "-" + rName + ".xml";
+		String filePath = "/opt/lampp/htdocs/webalizer/" + uName + "-" + rName + ".json";
 		PreparedStatement toCheck = conn.prepareStatement("SELECT runName FROM Runs WHERE filepath = ?");
 		toCheck.setString(1, filePath);
 		ResultSet set = toCheck.executeQuery();

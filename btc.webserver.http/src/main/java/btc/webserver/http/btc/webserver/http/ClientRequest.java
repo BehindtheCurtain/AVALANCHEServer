@@ -26,14 +26,17 @@ import java.sql.*;
 
 public class ClientRequest implements Runnable{
 	private NodeList nList = null;
-	private String sessionId = "";
-	private static final String CRLF = "\n";
+	private final Connection conn;
 	private Socket inc;
+	
 	private String xmlReq;
 	private String user = "";
 	private String pass = "";
 	private String salt = "";
-	private final Connection conn;
+	private String sessionId = "";
+
+	
+	static final String CRLF = "\n";
 	static final String SALT="salt";
 	static final String CHANGE="change";
 	static final String USERNAME="username";
@@ -50,6 +53,7 @@ public class ClientRequest implements Runnable{
 	static final String POST="post";
 	static final String QUERY="query";
 	static final String DOWNLOAD="download";
+	
 	private BtcDataBase db;
 	/**
 	 * Constructor
@@ -89,6 +93,8 @@ public class ClientRequest implements Runnable{
 			in = new BufferedReader(new InputStreamReader(inc.getInputStream()));
 			String input;
 			out = new DataOutputStream(inc.getOutputStream());
+			
+			
 			while(!(input = in.readLine()).equals("<?>")){
 				System.out.println(input);
 				if(input.contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")){
@@ -103,8 +109,9 @@ public class ClientRequest implements Runnable{
 				}
 			}
 			try {
-				out.writeBytes(XMLParser());
-		        out.flush();
+
+					out.writeBytes(XMLParser());
+			        out.flush();
 			} catch (SAXException e) {
 				e.printStackTrace();
 			} catch (ParserConfigurationException e) {
@@ -204,7 +211,9 @@ public class ClientRequest implements Runnable{
 	public String storeRun(Document doc) throws SQLException, IOException{
 		String message = "";
 		String runName = doc.getDocumentElement().getAttribute(NAME);
-		if(db.putRun(sessionId, xmlReq, runName)){
+		String run = doc.getDocumentElement().getTextContent();
+		
+		if(db.putRun(sessionId, run, runName)){
 			message += "HTTP/1.1 201 Created\r\nContent-Type: text/html\r\n\r\n<html><head></head><body><h1>Hello</h1></body></html>";
 		}
 		else{
